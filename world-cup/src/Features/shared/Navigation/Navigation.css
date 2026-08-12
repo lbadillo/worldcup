@@ -1,0 +1,30 @@
+.nav-link {
+  background-color: #198754 !important;
+  color: white !important;
+}
+
+.nav-tab-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nav-tab-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.nav-tab-link i {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.nav-link.active {
+  background-color: #190054 !important;
+  color: white !important;
+}

@@ -1,0 +1,40 @@
+{
+  "name": "world-cup",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "loc": "vite --mode devlocal",
+    "dev": "vite",
+    "build": "vite build",
+    "build:dev": "vite build --mode dev",
+    "build:qa": "vite build --mode qa",
+    "build:stg": "vite build --mode stg",
+    "build:prod": "vite build --mode prod",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.19.0",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "react": "^19.2.7",
+    "react-circle-flags": "^0.0.30",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.11.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "vite": "^8.1.1"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
+  }
+}

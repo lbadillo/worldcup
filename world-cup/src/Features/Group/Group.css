@@ -1,0 +1,74 @@
+.world-cup-bootstrap {
+  min-height: 100vh;
+  border-radius: 1rem;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(13, 110, 253, 0.12),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(13, 202, 240, 0.1),
+      transparent 30%
+    ),
+    #f8f9fa;
+}
+
+.world-cup-bootstrap .card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.world-cup-bootstrap .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.75rem 1.5rem rgba(33, 37, 41, 0.12);
+}
+
+.world-cup-bootstrap .team-button {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.world-cup-bootstrap .team-flag-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(13, 110, 253, 0.12);
+  border: 1px solid rgba(13, 110, 253, 0.25);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.world-cup-bootstrap .team-flag-icon img,
+.world-cup-bootstrap .team-flag-icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.world-cup-bootstrap .team-button.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.world-cup-bootstrap .team-button.active .team-flag-icon {
+  background-color: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.world-cup-bootstrap .team-button.active .badge {
+  opacity: 0.95;
+}
+
+@media (max-width: 576px) {
+  .world-cup-bootstrap {
+    border-radius: 0;
+  }
+}
