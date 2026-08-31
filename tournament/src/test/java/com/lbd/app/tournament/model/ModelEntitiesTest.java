@@ -13,18 +13,21 @@ class ModelEntitiesTest {
 
     @Test
     void shouldCreateTeamAndStageWithBuilder() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").build();
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
         Stage stage = Stage.builder().id(1L).name("Group Stage").build();
 
         assertEquals(1L, team.getId());
         assertEquals("Brazil", team.getName());
         assertEquals("br.png", team.getFlag());
+        assertEquals(3, team.getWins());
+        assertEquals(1, team.getDraws());
+        assertEquals(0, team.getLosses());
         assertEquals("Group Stage", stage.getName());
     }
 
     @Test
     void shouldCreateGroupAndTeamsRelation() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").build();
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
         Group group = Group.builder().id(10L).name("A").build();
 
         group.setTeams(Set.of(team));
@@ -37,8 +40,8 @@ class ModelEntitiesTest {
     @Test
     void shouldCreateMatchResultAndBet() {
         Group group = Group.builder().id(10L).name("A").build();
-        Team team1 = Team.builder().id(1L).name("Brazil").flag("br.png").build();
-        Team team2 = Team.builder().id(2L).name("Argentina").flag("ar.png").build();
+        Team team1 = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
+        Team team2 = Team.builder().id(2L).name("Argentina").flag("ar.png").wins(2).draws(0).losses(2).build();
         Stage stage = Stage.builder().id(1L).name("Group Stage").build();
 
         LocalDateTime dateMatch = LocalDateTime.of(2026, 6, 10, 15, 30);
@@ -61,6 +64,8 @@ class ModelEntitiesTest {
         assertEquals(1, result.getValue2());
         assertEquals("lucho", user.getNickname());
         assertEquals(3, bet.getPoints());
+        assertEquals(3, bet.getMatch().getTeam1().getWins());
+        assertEquals(2, bet.getMatch().getTeam2().getWins());
         assertNotNull(bet.getMatch());
         assertTrue(bet.getMatch().getTeam1().getName().contains("Brazil"));
     }

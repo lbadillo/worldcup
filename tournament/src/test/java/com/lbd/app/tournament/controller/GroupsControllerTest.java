@@ -17,7 +17,7 @@ class GroupsControllerTest {
     @Test
     void shouldReturnGroupsFromService() {
         List<GroupDTO> expected = List.of(
-                new GroupDTO(10L, "A", List.of(new TeamDTO(1L, "Brazil", "br.png")))
+                new GroupDTO(10L, "A", List.of(new TeamDTO(1L, "Brazil", "br.png", 3, 1, 0)))
         );
 
         GroupService groupService = () -> expected;

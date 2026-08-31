@@ -1,60 +1,86 @@
 # Tournament
 
-Proyecto Spring Boot para gestionar grupos, equipos, partidos y apuestas de un torneo.
+Spring Boot project for managing tournament groups, teams, matches, results, users, and bets.
 
-## Requisitos
+## Requirements
 
 - Java 17
-- Maven (o usar `./mvnw`)
-- MySQL en `localhost:3306`
-- Base de datos `tournament`
+- Maven, or the included Maven Wrapper (`./mvnw`)
+- MySQL running on `localhost:3306`
+- A database named `tournament`
 
-## Ejecutar el proyecto
+## Project Structure
+
+- Main source code: `src/main/java`
+- Test source code: `src/test/java`
+- Flyway migrations: `src/main/resources/db/migration`
+
+## Running the Project
+
+Run the application from the project root:
 
 ```zsh
-cd "/Users/ludwingbadillo/Lbd/source/worldcup/tournament"
 ./mvnw spring-boot:run
 ```
 
-Con la configuracion actual, los endpoints quedan con prefijo `/api`.
+All API endpoints are exposed under the `/api` prefix.
 
-Ejemplo:
+Example request:
 
 ```zsh
 curl -X GET "http://localhost:8080/api/groups" -H "Accept: application/json"
 ```
 
-## Pruebas unitarias
+## Database Migrations
 
-Las pruebas unitarias usan clases terminadas en `Test`.
+Flyway runs automatically when the application starts.
+
+- Initial schema: `V1__create_tournament_schema.sql`
+- Team statistics update: `V2__add_team_stats.sql`
+
+## Unit Tests
+
+Unit test classes must end with `Test`.
+
+Run unit tests:
 
 ```zsh
-cd "/Users/ludwingbadillo/Lbd/source/worldcup/tournament"
 ./mvnw test
 ```
 
-## Pruebas de integracion
+When running `test` or `install`, Maven executes only classes ending in `Test`.
 
-Las pruebas de integracion viven en el paquete `integracion` y terminan en `IT`.
-Estas pruebas usan perfil `integration` con base de datos H2 en memoria, por lo que no modifican datos de MySQL.
+## Integration Tests
 
-Ejecutar solo integracion:
+Integration test classes must end with `IT` and are located in the `integracion` package.
+
+These tests run with the `integration` profile and use an in-memory H2 database, so they do not modify MySQL data.
+
+Run only integration tests:
 
 ```zsh
-cd "/Users/ludwingbadillo/Lbd/source/worldcup/tournament"
 ./mvnw verify -Pintegration-tests
 ```
 
-## Cobertura con JaCoCo
+## Code Coverage
 
-JaCoCo se ejecuta en el ciclo `verify` y valida un minimo de cobertura de lineas.
+JaCoCo runs during the `verify` phase and validates the configured minimum line coverage.
+
+Run coverage validation:
 
 ```zsh
-cd "/Users/ludwingbadillo/Lbd/source/worldcup/tournament"
 ./mvnw verify
 ```
 
-Reporte HTML:
+JaCoCo HTML report:
 
 - `target/site/jacoco/index.html`
+
+## Packaging the Application
+
+Build the project and run unit tests:
+
+```zsh
+./mvnw install
+```
 

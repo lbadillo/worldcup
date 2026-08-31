@@ -18,7 +18,7 @@ class GroupServiceImplTest {
 
     @Test
     void shouldMapGroupsToDtos() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").build();
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
         Group group = Group.builder().id(10L).name("A").build();
         group.setTeams(Set.of(team));
 
@@ -43,6 +43,9 @@ class GroupServiceImplTest {
         assertEquals(10L, response.get(0).id());
         assertEquals("A", response.get(0).name());
         assertEquals(1L, response.get(0).teams().get(0).id());
+        assertEquals(3, response.get(0).teams().get(0).wins());
+        assertEquals(1, response.get(0).teams().get(0).draws());
+        assertEquals(0, response.get(0).teams().get(0).losses());
     }
 }
 

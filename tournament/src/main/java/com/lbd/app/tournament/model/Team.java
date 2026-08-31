@@ -30,5 +30,14 @@ public class Team {
 
     @Column(nullable = false)
     private String flag;
+
+    @Column(nullable = false)
+    private Integer wins;
+
+    @Column(nullable = false)
+    private Integer draws;
+
+    @Column(nullable = false)
+    private Integer losses;
 }
 

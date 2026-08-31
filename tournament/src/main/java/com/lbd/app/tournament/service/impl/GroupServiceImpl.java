@@ -33,7 +33,13 @@ public class GroupServiceImpl implements GroupService {
                 group.getId(),
                 group.getName(),
                 group.getTeams().stream()
-                        .map(team -> new TeamDTO(team.getId(), team.getName(), team.getFlag()))
+                        .map(team -> new TeamDTO(
+                                team.getId(),
+                                team.getName(),
+                                team.getFlag(),
+                                team.getWins(),
+                                team.getDraws(),
+                                team.getLosses()))
                         .collect(Collectors.toList())
         );
     }
