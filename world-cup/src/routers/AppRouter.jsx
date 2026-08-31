@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import MainLayout from '../layouts/MainLayout';
@@ -9,10 +10,13 @@ import { MainTabs, defaultByRole } from '../utils/MainTabs';
 
 function AppRouter() {
   const { currentUser, isAuthenticated } = useAuth();
-  const tabs = getTabsByRole(isAuthenticated ? currentUser.role : null);
-  const defaultRoute = isAuthenticated
-    ? (defaultByRole.get(currentUser.role) ?? '/home')
-    : '/home';
+  const role = isAuthenticated ? (currentUser?.role ?? null) : null;
+
+  const tabs = useMemo(() => getTabsByRole(role), [role]);
+  const defaultRoute = useMemo(
+    () => (isAuthenticated ? (defaultByRole.get(role) ?? '/home') : '/home'),
+    [role, isAuthenticated],
+  );
 
   return (
     <Routes>

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navigation.css';
 
@@ -37,4 +38,4 @@ function Navigation({ tabs = [] }) {
   );
 }
 
-export default Navigation;
+export default memo(Navigation);
