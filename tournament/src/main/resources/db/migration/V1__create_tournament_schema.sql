@@ -33,7 +33,7 @@ CREATE TABLE match_team (
     stage_id BIGINT NOT NULL,
     team_1_id BIGINT NOT NULL,
     team_2_id BIGINT NOT NULL,
-    date_match TIMESTAMP NOT NULL,
+    date_match DATETIME(3) NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_match_group
         FOREIGN KEY (group_id) REFERENCES group_data (id),

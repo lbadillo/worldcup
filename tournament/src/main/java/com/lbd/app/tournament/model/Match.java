@@ -1,6 +1,6 @@
 package com.lbd.app.tournament.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +47,6 @@ public class Match {
     private Team team2;
 
     @Column(name = "date_match", nullable = false)
-    private LocalDateTime dateMatch;
+    private Instant dateMatch;
 }
 

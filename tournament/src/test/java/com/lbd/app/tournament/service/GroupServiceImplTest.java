@@ -17,10 +17,11 @@ import com.lbd.app.tournament.service.impl.GroupServiceImpl;
 class GroupServiceImplTest {
 
     @Test
-    void shouldMapGroupsToDtos() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
+    void shouldMapGroupsToDtosOrderedByPointsDesc() {
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).points(10).build();
+        Team team2 = Team.builder().id(2L).name("Argentina").flag("ar.png").wins(2).draws(2).losses(0).points(8).build();
         Group group = Group.builder().id(10L).name("A").build();
-        group.setTeams(Set.of(team));
+        group.setTeams(Set.of(team2, team));
 
         GroupRepository repository = (GroupRepository) Proxy.newProxyInstance(
                 GroupRepository.class.getClassLoader(),
@@ -43,9 +44,12 @@ class GroupServiceImplTest {
         assertEquals(10L, response.get(0).id());
         assertEquals("A", response.get(0).name());
         assertEquals(1L, response.get(0).teams().get(0).id());
+        assertEquals(10, response.get(0).teams().get(0).points());
         assertEquals(3, response.get(0).teams().get(0).wins());
         assertEquals(1, response.get(0).teams().get(0).draws());
         assertEquals(0, response.get(0).teams().get(0).losses());
+        assertEquals(2L, response.get(0).teams().get(1).id());
+        assertEquals(8, response.get(0).teams().get(1).points());
     }
 }
 

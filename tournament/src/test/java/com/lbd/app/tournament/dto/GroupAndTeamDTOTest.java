@@ -10,7 +10,7 @@ class GroupAndTeamDTOTest {
 
     @Test
     void shouldExposeRecordValues() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Brazil", "br.png", 3, 1, 0);
+        TeamDTO teamDTO = new TeamDTO(1L, "Brazil", "br.png", 3, 1, 0, 10);
         GroupDTO groupDTO = new GroupDTO(10L, "A", List.of(teamDTO));
 
         assertEquals(1L, teamDTO.id());
@@ -19,6 +19,7 @@ class GroupAndTeamDTOTest {
         assertEquals(3, teamDTO.wins());
         assertEquals(1, teamDTO.draws());
         assertEquals(0, teamDTO.losses());
+        assertEquals(10, teamDTO.points());
         assertEquals(10L, groupDTO.id());
         assertEquals("A", groupDTO.name());
         assertEquals(1, groupDTO.teams().size());

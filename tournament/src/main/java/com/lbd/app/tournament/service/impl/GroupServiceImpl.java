@@ -1,5 +1,6 @@
 package com.lbd.app.tournament.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +34,18 @@ public class GroupServiceImpl implements GroupService {
                 group.getId(),
                 group.getName(),
                 group.getTeams().stream()
+                        .sorted(Comparator.comparing(
+                                        com.lbd.app.tournament.model.Team::getPoints,
+                                        Comparator.nullsLast(Comparator.reverseOrder()))
+                                .thenComparing(com.lbd.app.tournament.model.Team::getName, Comparator.nullsLast(String::compareToIgnoreCase)))
                         .map(team -> new TeamDTO(
                                 team.getId(),
                                 team.getName(),
                                 team.getFlag(),
                                 team.getWins(),
                                 team.getDraws(),
-                                team.getLosses()))
+                                team.getLosses(),
+                                team.getPoints()))
                         .collect(Collectors.toList())
         );
     }

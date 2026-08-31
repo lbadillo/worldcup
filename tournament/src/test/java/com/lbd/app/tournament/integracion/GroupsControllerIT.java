@@ -27,9 +27,11 @@ import com.lbd.app.tournament.dto.GroupDTO;
         "DELETE FROM group_data",
         "DELETE FROM stage",
         "DELETE FROM team",
-        "INSERT INTO team (id, name, flag, wins, draws, losses) VALUES (1, 'Brazil', 'br.png', 3, 1, 0)",
+        "INSERT INTO team (id, name, flag, wins, draws, losses, points) VALUES (1, 'Brazil', 'br.png', 3, 1, 0, 10)",
+        "INSERT INTO team (id, name, flag, wins, draws, losses, points) VALUES (2, 'Argentina', 'ar.png', 2, 2, 0, 8)",
         "INSERT INTO group_data (id, name) VALUES (10, 'A')",
-        "INSERT INTO group_team (group_id, team_id) VALUES (10, 1)"
+        "INSERT INTO group_team (group_id, team_id) VALUES (10, 1)",
+        "INSERT INTO group_team (group_id, team_id) VALUES (10, 2)"
 })
 class GroupsControllerIT {
 
@@ -61,6 +63,10 @@ class GroupsControllerIT {
         assertEquals(3, groupDTO.teams().get(0).wins());
         assertEquals(1, groupDTO.teams().get(0).draws());
         assertEquals(0, groupDTO.teams().get(0).losses());
+        assertEquals(10, groupDTO.teams().get(0).points());
+        assertEquals(2L, groupDTO.teams().get(1).id());
+        assertEquals("Argentina", groupDTO.teams().get(1).name());
+        assertEquals(8, groupDTO.teams().get(1).points());
     }
 }
 

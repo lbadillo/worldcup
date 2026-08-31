@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ class ModelEntitiesTest {
 
     @Test
     void shouldCreateTeamAndStageWithBuilder() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).points(10).build();
         Stage stage = Stage.builder().id(1L).name("Group Stage").build();
 
         assertEquals(1L, team.getId());
@@ -22,12 +23,13 @@ class ModelEntitiesTest {
         assertEquals(3, team.getWins());
         assertEquals(1, team.getDraws());
         assertEquals(0, team.getLosses());
+        assertEquals(10, team.getPoints());
         assertEquals("Group Stage", stage.getName());
     }
 
     @Test
     void shouldCreateGroupAndTeamsRelation() {
-        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
+        Team team = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).points(10).build();
         Group group = Group.builder().id(10L).name("A").build();
 
         group.setTeams(Set.of(team));
@@ -40,11 +42,11 @@ class ModelEntitiesTest {
     @Test
     void shouldCreateMatchResultAndBet() {
         Group group = Group.builder().id(10L).name("A").build();
-        Team team1 = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).build();
-        Team team2 = Team.builder().id(2L).name("Argentina").flag("ar.png").wins(2).draws(0).losses(2).build();
+        Team team1 = Team.builder().id(1L).name("Brazil").flag("br.png").wins(3).draws(1).losses(0).points(10).build();
+        Team team2 = Team.builder().id(2L).name("Argentina").flag("ar.png").wins(2).draws(0).losses(2).points(6).build();
         Stage stage = Stage.builder().id(1L).name("Group Stage").build();
 
-        LocalDateTime dateMatch = LocalDateTime.of(2026, 6, 10, 15, 30);
+        Instant dateMatch = Instant.parse("2026-08-31T21:30:00Z");
         Match match = Match.builder()
                 .id(100L)
                 .groupEntity(group)
@@ -66,6 +68,8 @@ class ModelEntitiesTest {
         assertEquals(3, bet.getPoints());
         assertEquals(3, bet.getMatch().getTeam1().getWins());
         assertEquals(2, bet.getMatch().getTeam2().getWins());
+        assertEquals(10, bet.getMatch().getTeam1().getPoints());
+        assertEquals(6, bet.getMatch().getTeam2().getPoints());
         assertNotNull(bet.getMatch());
         assertTrue(bet.getMatch().getTeam1().getName().contains("Brazil"));
     }

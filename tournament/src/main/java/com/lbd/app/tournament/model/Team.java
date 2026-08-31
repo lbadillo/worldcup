@@ -39,5 +39,8 @@ public class Team {
 
     @Column(nullable = false)
     private Integer losses;
+
+    @Column(nullable = false)
+    private Integer points;
 }
 
