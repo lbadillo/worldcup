@@ -1,11 +1,11 @@
-INSERT INTO tournament.team (name,flag) VALUES
-	 ('team11','fr'),
-	 ('team12','fr'),
-	 ('team13','fr'),
-	 ('team14','fr'),
-	 ('team21','fr'),
-	 ('team22','fr'),
-	 ('team23','fr'),
-	 ('team24','fr'),
-	 ('team31','fr'),
-	 ('team32','fr');
+INSERT INTO tournament.team (name,flag,wins,draws,losses) VALUES
+	 ('team11','fr',0,0,0),
+	 ('team12','fr',0,0,0),
+	 ('team13','fr',0,0,0),
+	 ('team14','fr',0,0,0),
+	 ('team21','fr',0,0,0),
+	 ('team22','fr',0,0,0),
+	 ('team23','fr',0,0,0),
+	 ('team24','fr',0,0,0),
+	 ('team31','fr',0,0,0),
+	 ('team32','fr',0,0,0);
