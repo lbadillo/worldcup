@@ -51,9 +51,7 @@ class ControllerIT {
 
     @Test
     void shouldReturnGroupsWithTeams() {
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .build();
+        RestClient restClient = getRestClient();
 
         List<GroupDTO> response = restClient.get()
                 .uri("/api/groups")
@@ -85,9 +83,7 @@ class ControllerIT {
 
     @Test
     void shouldReturnMatchesByGroupAndStage() {
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .build();
+        RestClient restClient = getRestClient();
 
         List<MatchDTO> response = restClient.get()
                 .uri("/api/matches/groups/10/stages/1")
@@ -113,9 +109,7 @@ class ControllerIT {
 
     @Test
     void shouldReturnMatchesByStageWhenGroupIdIsNotSent() {
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .build();
+        RestClient restClient = getRestClient();
 
         List<MatchDTO> response = restClient.get()
                 .uri("/api/matches/stages/1")
@@ -138,9 +132,7 @@ class ControllerIT {
 
     @Test
     void shouldReturnNotFoundErrorWhenStageDoesNotExist() {
-        RestClient restClient = RestClient.builder()
-                .baseUrl("http://localhost:" + port)
-                .build();
+        RestClient restClient = getRestClient();
 
         ErrorResponseDTO response = restClient.get()
                 .uri("/api/matches/stages/99")
@@ -154,6 +146,13 @@ class ControllerIT {
         assertEquals("Not Found", response.error());
         assertTrue(response.message().contains("Stage not found with id: 99"));
         assertEquals("/api/matches/stages/99", response.path());
+    }
+
+    private RestClient getRestClient() {
+        return RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .build();
+
     }
 }
 
