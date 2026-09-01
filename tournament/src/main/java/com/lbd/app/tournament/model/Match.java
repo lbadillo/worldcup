@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,5 +49,8 @@ public class Match {
 
     @Column(name = "date_match", nullable = false)
     private Instant dateMatch;
+
+    @OneToOne(mappedBy = "match", fetch = FetchType.LAZY)
+    private Result result;
 }
 
