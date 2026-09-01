@@ -56,12 +56,22 @@ CREATE TABLE result (
         FOREIGN KEY (match_id) REFERENCES match_team (id)
 );
 
+CREATE TABLE user_role (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE user_tournament (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
-    nickname VARCHAR(255) NOT NULL,
+    provider_user VARCHAR(255) NOT NULL,
+    provider_id VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT fk_user_tournament_role
+        FOREIGN KEY (id) REFERENCES user_role (id)
+
 );
 
 CREATE TABLE bet (

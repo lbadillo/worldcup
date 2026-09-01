@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -58,13 +57,19 @@ class ModelEntitiesTest {
 
         Result result = Result.builder().id(200L).match(match).value1(2).value2(1).build();
 
-        User user = User.builder().id(300L).name("Luis").nickname("lucho").email("luis@mail.com").build();
+        User user = User.builder()
+                .id(300L)
+                .name("Luis")
+                .email("luis@mail.com")
+                .providerId("google")
+                .providerUserId("lucho")
+                .build();
         Bet bet = Bet.builder().id(400L).user(user).match(match).value1(2).value2(1).points(3).build();
 
         assertEquals(dateMatch, match.getDateMatch());
         assertEquals(2, result.getValue1());
         assertEquals(1, result.getValue2());
-        assertEquals("lucho", user.getNickname());
+        assertEquals("lucho", user.getProviderUserId());
         assertEquals(3, bet.getPoints());
         assertEquals(3, bet.getMatch().getTeam1().getWins());
         assertEquals(2, bet.getMatch().getTeam2().getWins());
@@ -74,4 +79,3 @@ class ModelEntitiesTest {
         assertTrue(bet.getMatch().getTeam1().getName().contains("Brazil"));
     }
 }
-

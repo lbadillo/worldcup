@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.lbd.app.tournament.dto.ErrorResponseDTO;
@@ -18,6 +21,10 @@ class GlobalExceptionHandlerTest {
     private static class DummyController {
         @SuppressWarnings("unused")
         void endpoint(Long stageId) {
+        }
+
+        @SuppressWarnings("unused")
+        void endpointWithValidation(String name) {
         }
     }
 
@@ -94,6 +101,31 @@ class GlobalExceptionHandlerTest {
         assertEquals("Internal Server Error", response.error());
         assertEquals("An unexpected error occurred. Please contact support.", response.message());
         assertEquals("/api/matches/stages/1", response.path());
+    }
+
+    @Test
+    void shouldBuildValidationErrorResponse() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/user");
+
+        Method method;
+        try {
+            method = DummyController.class.getDeclaredMethod("endpointWithValidation", String.class);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "request");
+        bindingResult.addError(new FieldError("request", "name", "must not be blank"));
+
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(new MethodParameter(method, 0), bindingResult);
+        ErrorResponseDTO response = handler.handleValidation(ex, request).getBody();
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.status());
+        assertEquals("Bad Request", response.error());
+        assertEquals("Validation failed.", response.message());
+        assertEquals("/api/user", response.path());
     }
 }
 

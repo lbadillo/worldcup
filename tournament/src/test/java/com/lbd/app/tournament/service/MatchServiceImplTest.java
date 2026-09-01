@@ -269,5 +269,41 @@ class MatchServiceImplTest {
 
         assertEquals("No matches found for stage id: 1", ex.getMessage());
     }
+
+    @Test
+    void shouldThrowWhenNoMatchesFoundForGroupAndStage() {
+        MatchRepository matchRepository = (MatchRepository) Proxy.newProxyInstance(
+                MatchRepository.class.getClassLoader(),
+                new Class<?>[]{MatchRepository.class},
+                (proxy, method, args) -> {
+                    if ("findByGroupAndStageWithResult".equals(method.getName())) {
+                        return List.of();
+                    }
+                    if ("toString".equals(method.getName())) {
+                        return "MatchRepositoryProxy";
+                    }
+                    throw new UnsupportedOperationException("Method not supported in this test: " + method.getName());
+                }
+        );
+
+        GroupRepository groupRepository = (GroupRepository) Proxy.newProxyInstance(
+                GroupRepository.class.getClassLoader(),
+                new Class<?>[]{GroupRepository.class},
+                (proxy, method, args) -> true
+        );
+
+        StageRepository stageRepository = (StageRepository) Proxy.newProxyInstance(
+                StageRepository.class.getClassLoader(),
+                new Class<?>[]{StageRepository.class},
+                (proxy, method, args) -> true
+        );
+
+        MatchService service = new MatchServiceImpl(matchRepository, groupRepository, stageRepository);
+
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+                () -> service.getMatchesByGroupAndStage(10L, 1L));
+
+        assertEquals("No matches found for group id 10 and stage id 1", ex.getMessage());
+    }
 }
 
