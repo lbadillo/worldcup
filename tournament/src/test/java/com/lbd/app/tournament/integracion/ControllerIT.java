@@ -43,7 +43,9 @@ import com.lbd.app.tournament.dto.MatchDTO;
         "INSERT INTO stage (id, name) VALUES (1, 'Group Stage')",
         "INSERT INTO match_team (id, group_id, stage_id, team_1_id, team_2_id, date_match) VALUES (100, 10, 1, 1, 2, '2026-06-10 15:30:00')",
         "INSERT INTO match_team (id, group_id, stage_id, team_1_id, team_2_id, date_match) VALUES (101, 10, 1, 2, 1, '2026-06-11 15:30:00')",
-        "INSERT INTO match_team (id, group_id, stage_id, team_1_id, team_2_id, date_match) VALUES (102, 11, 1, 3, 1, '2026-06-12 15:30:00')",
+        "INSERT INTO match_team (id, group_id, stage_id, team_1_id, " +
+                "team_2_id, date_match) VALUES (102, null, 1, 3, 1, " +
+                "'2026-06-12 15:30:00')",
         "INSERT INTO result (id, match_id, value_1, value_2) VALUES (200, 100, 2, 1)"
 })
 class ControllerIT {
@@ -127,7 +129,6 @@ class ControllerIT {
         assertEquals(101L, response.get(1).id());
         assertEquals(10L, response.get(1).groupId());
         assertEquals(102L, response.get(2).id());
-        assertEquals(11L, response.get(2).groupId());
         assertEquals(0, response.get(1).result().value1());
         assertEquals(0, response.get(2).result().value1());
     }

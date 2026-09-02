@@ -1,6 +1,7 @@
 package com.lbd.app.tournament.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class MatchServiceImpl implements MatchService {
 
         return new MatchDTO(
                 match.getId(),
-                match.getGroup().getId(),
+                Objects.nonNull(match.getGroup()) ? match.getGroup().getId() : null,
                 match.getStage().getId(),
                 match.getStage().getName(),
                 new TeamSummaryDTO(match.getTeam1().getId(), match.getTeam1().getName(), match.getTeam1().getFlag()),
