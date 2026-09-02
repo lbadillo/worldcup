@@ -2,17 +2,29 @@ package com.lbd.app.tournament.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.lbd.app.tournament.dto.AuthenticatedUserDTO;
 import com.lbd.app.tournament.service.UserService;
 
-class UserControllerTest {
+@ExtendWith(MockitoExtension.class)
+public class UserControllerTest {
+
+    @InjectMocks
+    private UserController userController;
+
+    @Mock
+    private UserService userService;
 
     @Test
     void shouldReturnUserInfoFromService() {
@@ -22,46 +34,14 @@ class UserControllerTest {
                 .name("John Doe")
                 .build();
 
-        UserController controller = new UserController(new StubUserService(expected));
+        when(userService.getUserInfo()).thenReturn(expected);
 
-        AuthenticatedUserDTO response = controller.getUser();
+        AuthenticatedUserDTO response = userController.getUser();
 
         assertSame(expected, response);
         assertEquals("user@example.com", response.getEmail());
     }
 
-    private static final class StubUserService implements UserService {
 
-        private final AuthenticatedUserDTO response;
-
-        private StubUserService(AuthenticatedUserDTO response) {
-            this.response = response;
-        }
-
-        @Override
-        public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) {
-            throw new UnsupportedOperationException("Not needed for this test");
-        }
-
-        @Override
-        public List<AuthenticatedUserDTO> getAllUsers() {
-            throw new UnsupportedOperationException("Not needed for this test");
-        }
-
-        @Override
-        public AuthenticatedUserDTO getUserById(Long id) {
-            throw new UnsupportedOperationException("Not needed for this test");
-        }
-
-        @Override
-        public AuthenticatedUserDTO updateUser(AuthenticatedUserDTO data) {
-            throw new UnsupportedOperationException("Not needed for this test");
-        }
-
-        @Override
-        public AuthenticatedUserDTO getUserInfo() {
-            return response;
-        }
-    }
 }
 

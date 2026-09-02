@@ -30,9 +30,9 @@ public class MatchesController {
 
     @GetMapping("/stages/{stageId}")
     public ResponseEntity<List<MatchDTO>> getMatchesByStage(
-            @PathVariable Long stageId,
-            @RequestParam(required = false) Long groupId) {
-        return ResponseEntity.ok(matchService.getMatchesByGroupAndStage(groupId, stageId));
+            @PathVariable Long stageId) {
+        return ResponseEntity.ok(matchService.getMatchesByGroupAndStage(null,
+                stageId));
     }
 }
 
