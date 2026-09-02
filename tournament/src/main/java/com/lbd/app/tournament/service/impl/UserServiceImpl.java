@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService,
     @Override
     public OAuth2User loadUser(final OAuth2UserRequest oAuth2UserRequest) {
         OAuth2User oAuth2User = oauth2Delegate.loadUser(oAuth2UserRequest);
+        assert oAuth2User != null;
         return processOAuth2User(oAuth2UserRequest, oAuth2User);
     }
 
