@@ -1,7 +1,6 @@
 package com.lbd.app.tournament.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,11 +11,13 @@ import com.lbd.app.tournament.model.UserRole;
 import com.lbd.app.tournament.repository.UserRepository;
 import com.lbd.app.tournament.util.GeneralConstants;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -24,22 +25,33 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 import com.lbd.app.tournament.dto.AuthenticatedUserDTO;
-import com.lbd.app.tournament.exception.BadRequestException;
 import com.lbd.app.tournament.service.UserService;
 
 @Service
-@RequiredArgsConstructor
-public class UserServiceImpl extends DefaultOAuth2UserService implements UserService {
+@NullMarked
+public class UserServiceImpl implements UserService,
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2Delegate;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this(userRepository, new DefaultOAuth2UserService());
+    }
+
+    public UserServiceImpl(UserRepository userRepository,
+                           OAuth2UserService<OAuth2UserRequest, OAuth2User>
+                                   oauth2Delegate) {
+        this.userRepository = userRepository;
+        this.oauth2Delegate = oauth2Delegate;
+    }
 
     @Override
     public OAuth2User loadUser(final OAuth2UserRequest oAuth2UserRequest) {
-
-        OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
+        OAuth2User oAuth2User = oauth2Delegate.loadUser(oAuth2UserRequest);
         return processOAuth2User(oAuth2UserRequest, oAuth2User);
     }
-
 
     @Override
     public List<AuthenticatedUserDTO> getAllUsers() {
@@ -51,39 +63,30 @@ public class UserServiceImpl extends DefaultOAuth2UserService implements UserSer
     @Override
     public AuthenticatedUserDTO getUserById(Long id) {
         return userRepository.findById(id).map(this::toDTO)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Record not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Record not found"));
     }
 
     @Override
     public AuthenticatedUserDTO updateUser(AuthenticatedUserDTO data) {
-        return toDTO(
-                userRepository.save(toEntity(data)));
+        return toDTO(userRepository.save(toEntity(data)));
     }
 
     @Override
     public AuthenticatedUserDTO getUserInfo() {
-        Authentication authentication = SecurityContextHolder
-                .getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken) {
             Jwt token = (Jwt) authentication.getPrincipal();
-
             return getUser(token.getClaimAsString("email"))
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "User not found"));
-
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         } else {
             assert authentication != null;
-            DefaultOAuth2User user = (DefaultOAuth2User)
-                    authentication.getPrincipal();
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
             assert user != null;
             return getUser(user.getAttribute("email"))
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "User not found"));
-
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         }
     }
-
 
     private Optional<AuthenticatedUserDTO> getUser(final String userName) {
         return userRepository.findByEmail(userName).map(entity ->
@@ -98,32 +101,24 @@ public class UserServiceImpl extends DefaultOAuth2UserService implements UserSer
                         .build());
     }
 
-
     private OAuth2User processOAuth2User(
             final OAuth2UserRequest oAuth2UserRequest,
             final OAuth2User oAuth2User) {
-        AuthenticatedUserDTO userInfoDto = AuthenticatedUserDTO
-                .builder()
+        AuthenticatedUserDTO userInfoDto = AuthenticatedUserDTO.builder()
                 .name(oAuth2User.getAttributes().get("name").toString())
-                .providerUserId(oAuth2User
-                        .getAttributes().get("sub").toString())
+                .providerUserId(oAuth2User.getAttributes().get("sub").toString())
                 .email(oAuth2User.getAttributes().get("email").toString())
-                .providerId(oAuth2UserRequest
-                        .getClientRegistration().getRegistrationId())
+                .providerId(oAuth2UserRequest.getClientRegistration().getRegistrationId())
                 .build();
 
-
-        userRepository.findByEmail(userInfoDto.getName())
-                .map(existingUser -> updateExistingUser(existingUser,
-                        userInfoDto))
+        userRepository.findByEmail(userInfoDto.getEmail())
+                .map(existingUser -> updateExistingUser(existingUser, userInfoDto))
                 .orElseGet(() -> registerNewUser(userInfoDto));
 
         return oAuth2User;
-
     }
 
     private User registerNewUser(final AuthenticatedUserDTO userInfoDto) {
-
         if (Objects.isNull(userInfoDto.getRoleId())) {
             if (userRepository.existUsers() > 0) {
                 userInfoDto.setRoleId(GeneralConstants.USER_ROLE);
@@ -136,18 +131,12 @@ public class UserServiceImpl extends DefaultOAuth2UserService implements UserSer
                         .providerId(userInfoDto.getProviderId())
                         .name(userInfoDto.getName())
                         .email(userInfoDto.getEmail())
-                        .providerUserId(userInfoDto
-                                .getProviderUserId())
-                        .role(UserRole.builder()
-                                .id(userInfoDto.getRoleId())
-                                .build())
+                        .providerUserId(userInfoDto.getProviderUserId())
+                        .role(UserRole.builder().id(userInfoDto.getRoleId()).build())
                         .build());
-
     }
 
-    private User updateExistingUser(
-            final User existingUser,
-            final AuthenticatedUserDTO userInfoDto) {
+    private User updateExistingUser(final User existingUser, final AuthenticatedUserDTO userInfoDto) {
         existingUser.setName(userInfoDto.getName());
         existingUser.setProviderUserId(userInfoDto.getProviderUserId());
         existingUser.setProviderId(userInfoDto.getProviderId());
@@ -165,7 +154,6 @@ public class UserServiceImpl extends DefaultOAuth2UserService implements UserSer
                         .id(data.getRoleId())
                         .name(data.getRoleName())
                         .build())
-
                 .build();
     }
 
@@ -180,5 +168,4 @@ public class UserServiceImpl extends DefaultOAuth2UserService implements UserSer
                 .roleId(entity.getRole().getId())
                 .build();
     }
-
 }
