@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.RestClient;
@@ -22,6 +23,7 @@ import com.lbd.app.tournament.dto.MatchDTO;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Sql(statements = {
         "DELETE FROM group_team",
         "DELETE FROM bet",

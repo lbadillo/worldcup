@@ -48,7 +48,7 @@ class ModelEntitiesTest {
         Instant dateMatch = Instant.parse("2026-08-31T21:30:00Z");
         Match match = Match.builder()
                 .id(100L)
-                .groupEntity(group)
+                .group(group)
                 .stage(stage)
                 .team1(team1)
                 .team2(team2)

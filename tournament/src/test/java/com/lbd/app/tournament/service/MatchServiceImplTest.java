@@ -52,7 +52,7 @@ public class MatchServiceImplTest {
 
         match = Match.builder()
                 .id(100L)
-                .groupEntity(group)
+                .group(group)
                 .stage(stage)
                 .team1(team1)
                 .team2(team2)
@@ -62,7 +62,7 @@ public class MatchServiceImplTest {
 
         matchWithoutResult = Match.builder()
                 .id(101L)
-                .groupEntity(group)
+                .group(group)
                 .stage(stage)
                 .team1(team2)
                 .team2(team1)

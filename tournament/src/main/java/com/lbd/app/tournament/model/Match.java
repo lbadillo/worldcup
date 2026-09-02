@@ -2,6 +2,7 @@ package com.lbd.app.tournament.model;
 
 import java.time.Instant;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,8 +33,8 @@ public class Match {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group groupEntity;
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stage_id", nullable = false)
@@ -50,7 +51,7 @@ public class Match {
     @Column(name = "date_match", nullable = false)
     private Instant dateMatch;
 
-    @OneToOne(mappedBy = "match", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Result result;
 }
 

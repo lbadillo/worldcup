@@ -61,7 +61,7 @@ public class MatchServiceImpl implements MatchService {
 
         return new MatchDTO(
                 match.getId(),
-                match.getGroupEntity().getId(),
+                match.getGroup().getId(),
                 match.getStage().getId(),
                 match.getStage().getName(),
                 new TeamSummaryDTO(match.getTeam1().getId(), match.getTeam1().getName(), match.getTeam1().getFlag()),

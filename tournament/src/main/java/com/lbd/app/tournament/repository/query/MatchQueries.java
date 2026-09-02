@@ -8,7 +8,7 @@ public final class MatchQueries {
 
     public static final String FIND_BY_GROUP_AND_STAGE_WITH_RESULT = """
             select m from Match m
-            join fetch m.groupEntity g
+            join fetch m.group g
             join fetch m.stage s
             join fetch m.team1 t1
             join fetch m.team2 t2
@@ -19,11 +19,11 @@ public final class MatchQueries {
 
     public static final String FIND_BY_STAGE_WITH_RESULT = """
             select m from Match m
-            join fetch m.groupEntity g
             join fetch m.stage s
             join fetch m.team1 t1
             join fetch m.team2 t2
             left join fetch m.result r
+            left join fetch m.group g
             where s.id = :stageId
             order by m.dateMatch asc
             """;
