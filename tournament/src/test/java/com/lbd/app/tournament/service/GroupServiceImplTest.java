@@ -1,20 +1,30 @@
 package com.lbd.app.tournament.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.lang.reflect.Proxy;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
 import com.lbd.app.tournament.dto.GroupDTO;
 import com.lbd.app.tournament.model.Group;
 import com.lbd.app.tournament.model.Team;
 import com.lbd.app.tournament.repository.GroupRepository;
 import com.lbd.app.tournament.service.impl.GroupServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-class GroupServiceImplTest {
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class GroupServiceImplTest {
+
+    @InjectMocks
+    private GroupServiceImpl service;
+
+    @Mock
+    private GroupRepository groupRepository;
 
     @Test
     void shouldMapGroupsToDtosOrderedByPointsDesc() {
@@ -23,21 +33,8 @@ class GroupServiceImplTest {
         Group group = Group.builder().id(10L).name("A").build();
         group.setTeams(Set.of(team2, team));
 
-        GroupRepository repository = (GroupRepository) Proxy.newProxyInstance(
-                GroupRepository.class.getClassLoader(),
-                new Class<?>[]{GroupRepository.class},
-                (proxy, method, args) -> {
-                    if ("findAllWithTeams".equals(method.getName())) {
-                        return List.of(group);
-                    }
-                    if ("toString".equals(method.getName())) {
-                        return "GroupRepositoryProxy";
-                    }
-                    throw new UnsupportedOperationException("Method not supported in this test: " + method.getName());
-                }
-        );
 
-        GroupService service = new GroupServiceImpl(repository);
+        when(groupRepository.findAllWithTeams()).thenReturn(List.of(group));
         List<GroupDTO> response = service.getAllGroupsWithTeams();
 
         assertEquals(1, response.size());

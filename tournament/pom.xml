@@ -108,6 +108,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>${skip.unit.tests}</skipTests>
+					<argLine>${surefireArgLine} -XX:+EnableDynamicAgentLoading</argLine>
 					<includes>
 						<include>**/*Test.java</include>
 					</includes>
@@ -132,6 +133,10 @@
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
 					</execution>
 					<execution>
 						<id>report</id>
