@@ -125,6 +125,7 @@
 					<excludes>
 						<exclude>**/TournamentApplication*</exclude>
 						<exclude>**/config/**</exclude>
+						<exclude>**/repository/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
