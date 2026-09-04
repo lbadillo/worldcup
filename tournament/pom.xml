@@ -126,19 +126,33 @@
 						<exclude>**/TournamentApplication*</exclude>
 						<exclude>**/config/**</exclude>
 						<exclude>**/repository/**</exclude>
+						<exclude>**/util/*Constants*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
+
 					<execution>
 						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 						<configuration>
-
 							<propertyName>surefireArgLine</propertyName>
 						</configuration>
 					</execution>
+
+
+					<execution>
+						<id>prepare-agent-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+
+					<!-- Reportes de cobertura -->
 					<execution>
 						<id>report</id>
 						<phase>verify</phase>
@@ -146,6 +160,15 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>report-integration</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report-integration</goal>
+						</goals>
+					</execution>
+
+
 					<execution>
 						<id>check</id>
 						<phase>verify</phase>
@@ -155,7 +178,7 @@
 						<configuration>
 							<rules>
 								<rule>
-									<element>BUNDLE</element>
+									<element>CLASS</element>
 									<limits>
 										<limit>
 											<counter>LINE</counter>
@@ -185,9 +208,8 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-failsafe-plugin</artifactId>
 						<configuration>
-							<includes>
-								<include>**/*IT.java</include>
-							</includes>
+
+							<argLine>${failsafeArgLine} -XX:+EnableDynamicAgentLoading</argLine>
 						</configuration>
 						<executions>
 							<execution>
