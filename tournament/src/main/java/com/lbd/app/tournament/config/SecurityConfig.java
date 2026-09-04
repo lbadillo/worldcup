@@ -12,9 +12,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                            @Value("${app.security.enabled:true}")
-                                            boolean securityEnabled) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${app.security.enabled:true}")
+            boolean securityEnabled) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
 
         if (!securityEnabled) {

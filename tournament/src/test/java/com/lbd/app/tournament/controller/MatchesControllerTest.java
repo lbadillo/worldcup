@@ -34,13 +34,13 @@ public class MatchesControllerTest {
         when(matchService.getMatchesByGroupAndStage(10L, 1L))
                 .thenReturn(getMatches(10L, 1L));
 
-        ResponseEntity<List<MatchDTO>> response =
+        List<MatchDTO> response =
                 matchesController.getMatchesByGroupAndStage(10L, 1L);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-        assertEquals(100L, response.getBody().get(0).id());
-        assertEquals(2, response.getBody().get(0).result().value1());
+
+        assertEquals(1, response.size());
+        assertEquals(100L, response.get(0).id());
+        assertEquals(2, response.get(0).result().value1());
     }
 
     @Test
@@ -48,13 +48,13 @@ public class MatchesControllerTest {
         when(matchService.getMatchesByGroupAndStage(null, 2L))
                 .thenReturn(getMatches(null, 2L));
 
-        ResponseEntity<List<MatchDTO>> response =
+        List<MatchDTO> response =
                 matchesController.getMatchesByStage(2L);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-        assertNull(response.getBody().get(0).groupId());
-        assertEquals(2L, response.getBody().get(0).stageId());
+
+        assertEquals(1, response.size());
+        assertNull(response.get(0).groupId());
+        assertEquals(2L, response.get(0).stageId());
     }
 
     private List<MatchDTO> getMatches(Long groupId,

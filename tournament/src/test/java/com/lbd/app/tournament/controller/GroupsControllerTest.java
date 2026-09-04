@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +32,9 @@ public class GroupsControllerTest {
                 new GroupDTO(10L, "A", List.of(
                         new TeamDTO(1L, "Brazil", "br.png", 3, 1, 0, 10)))));
 
-        ResponseEntity<List<GroupDTO>> response = groupsController.getAllGroups();
+        List<GroupDTO> response = groupsController.getAllGroups();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response);
 
     }
 

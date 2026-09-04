@@ -22,8 +22,8 @@ public class GroupsController {
 
 
     @GetMapping
-    public ResponseEntity<List<GroupDTO>> getAllGroups() {
-        return ResponseEntity.ok(groupService.getAllGroupsWithTeams());
+    public List<GroupDTO> getAllGroups() {
+        return groupService.getAllGroupsWithTeams();
     }
 
     //TODO delete this method when the security is implemented

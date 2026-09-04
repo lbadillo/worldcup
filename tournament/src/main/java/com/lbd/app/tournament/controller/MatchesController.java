@@ -22,17 +22,17 @@ public class MatchesController {
     private final MatchService matchService;
 
     @GetMapping("/groups/{groupId}/stages/{stageId}")
-    public ResponseEntity<List<MatchDTO>> getMatchesByGroupAndStage(
+    public List<MatchDTO> getMatchesByGroupAndStage(
             @PathVariable Long groupId,
             @PathVariable Long stageId) {
-        return ResponseEntity.ok(matchService.getMatchesByGroupAndStage(groupId, stageId));
+        return matchService.getMatchesByGroupAndStage(groupId, stageId);
     }
 
     @GetMapping("/stages/{stageId}")
-    public ResponseEntity<List<MatchDTO>> getMatchesByStage(
+    public List<MatchDTO> getMatchesByStage(
             @PathVariable Long stageId) {
-        return ResponseEntity.ok(matchService.getMatchesByGroupAndStage(null,
-                stageId));
+        return matchService.getMatchesByGroupAndStage(null,
+                stageId);
     }
 }
 
