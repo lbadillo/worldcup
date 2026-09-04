@@ -37,5 +37,12 @@ public class GroupsControllerTest {
 
     }
 
+    //TODO delete this method when the security is implemented
+    @Test
+    void shouldReturnTestString() {
+        ResponseEntity<String> response = groupsController.getTest();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
 }
 

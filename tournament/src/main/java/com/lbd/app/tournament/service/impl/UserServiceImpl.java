@@ -1,8 +1,10 @@
 package com.lbd.app.tournament.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.lbd.app.tournament.exception.ResourceNotFoundException;
@@ -13,6 +15,7 @@ import com.lbd.app.tournament.util.GeneralConstants;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -110,19 +113,35 @@ public class UserServiceImpl implements UserService,
                 .providerId(oAuth2UserRequest.getClientRegistration().getRegistrationId())
                 .build();
 
-        userRepository.findByEmail(userInfoDto.getEmail())
+        var tmpUser = userRepository.findByEmail(userInfoDto.getEmail())
                 .map(existingUser -> updateExistingUser(existingUser, userInfoDto))
                 .orElseGet(() -> registerNewUser(userInfoDto));
 
-        return oAuth2User;
+        Set<SimpleGrantedAuthority> mappedAuthorities = new HashSet<>();
+        mappedAuthorities.add(new SimpleGrantedAuthority(tmpUser.getRole().getName()));
+        String userNameAttributeName = oAuth2UserRequest.getClientRegistration()
+                .getProviderDetails()
+                .getUserInfoEndpoint()
+                .getUserNameAttributeName();
+
+
+        return new DefaultOAuth2User(
+                mappedAuthorities,
+                oAuth2User.getAttributes(),
+                userNameAttributeName
+        );
+
+
     }
 
     private User registerNewUser(final AuthenticatedUserDTO userInfoDto) {
         if (Objects.isNull(userInfoDto.getRoleId())) {
             if (userRepository.existUsers() > 0) {
                 userInfoDto.setRoleId(GeneralConstants.USER_ROLE_ID);
+                userInfoDto.setRoleName(GeneralConstants.USER_ROLE_NAME);
             } else {
                 userInfoDto.setRoleId(GeneralConstants.ADMIN_ROLE_ID);
+                userInfoDto.setRoleName(GeneralConstants.ADMIN_ROLE_NAME);
             }
         }
         return userRepository.save(
@@ -131,7 +150,10 @@ public class UserServiceImpl implements UserService,
                         .name(userInfoDto.getName())
                         .email(userInfoDto.getEmail())
                         .providerUserId(userInfoDto.getProviderUserId())
-                        .role(UserRole.builder().id(userInfoDto.getRoleId()).build())
+                        .role(UserRole.builder()
+                                .id(userInfoDto.getRoleId())
+                                .name(userInfoDto.getRoleName())
+                                .build())
                         .build());
     }
 

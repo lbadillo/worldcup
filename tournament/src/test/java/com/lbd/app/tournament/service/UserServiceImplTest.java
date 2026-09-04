@@ -127,7 +127,10 @@ public class UserServiceImplTest {
                 .email("john.doe@example.com")
                 .providerId("google")
                 .providerUserId("google-old-id")
-                .role(UserRole.builder().id(GeneralConstants.USER_ROLE_ID).build())
+                .role(UserRole.builder()
+                        .id(GeneralConstants.USER_ROLE_ID)
+                        .name(GeneralConstants.USER_ROLE_NAME)
+                        .build())
                 .build();
     }
 
