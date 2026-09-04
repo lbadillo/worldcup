@@ -10,7 +10,6 @@ import com.lbd.app.tournament.model.User;
 import com.lbd.app.tournament.model.UserRole;
 import com.lbd.app.tournament.repository.UserRepository;
 import com.lbd.app.tournament.util.GeneralConstants;
-import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -122,9 +121,9 @@ public class UserServiceImpl implements UserService,
     private User registerNewUser(final AuthenticatedUserDTO userInfoDto) {
         if (Objects.isNull(userInfoDto.getRoleId())) {
             if (userRepository.existUsers() > 0) {
-                userInfoDto.setRoleId(GeneralConstants.USER_ROLE);
+                userInfoDto.setRoleId(GeneralConstants.USER_ROLE_ID);
             } else {
-                userInfoDto.setRoleId(GeneralConstants.ADMIN_ROLE);
+                userInfoDto.setRoleId(GeneralConstants.ADMIN_ROLE_ID);
             }
         }
         return userRepository.save(
