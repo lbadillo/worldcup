@@ -2,14 +2,16 @@ package com.lbd.app.tournament.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 
 
 import java.time.Instant;
 import java.util.List;
 
+import com.lbd.app.tournament.dto.AuthenticatedUserDTO;
+import com.lbd.app.tournament.dto.UserBetIDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,11 @@ public class MatchServiceImplTest {
     private StageRepository stageRepository;
     @Mock
     private GroupRepository groupRepository;
+    @Mock
+    private UserBetIDTO userBetIDTO;
+    @Mock
+    private UserService userService;
+
 
     @BeforeAll
     static void setUp() {
@@ -151,6 +158,21 @@ public class MatchServiceImplTest {
                 () -> service.getMatchesByGroupAndStage(10L, 1L));
 
         assertEquals("No matches found for group id 10 and stage id 1", ex.getMessage());
+    }
+
+    @Test
+    void shouldReturnALlMatchesByDate() {
+        when(matchRepository.findByDateAndUser(any(), any(), any()))
+                .thenReturn(List.of(userBetIDTO));
+
+        when(userService.getUserInfo()).thenReturn(
+                AuthenticatedUserDTO
+                        .builder()
+                        .id(1L)
+                        .build());
+        var response = service.getMatchesByDate("2026-06-10", "2026-06-11");
+        assertEquals(1, response.size());
+
     }
 }
 

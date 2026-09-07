@@ -2,9 +2,12 @@ package com.lbd.app.tournament.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Method;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -126,6 +129,21 @@ class GlobalExceptionHandlerTest {
         assertEquals("Bad Request", response.error());
         assertEquals("Validation failed.", response.message());
         assertEquals("/api/user", response.path());
+    }
+
+    @Test
+    void shouldBuildConstraintViolationResponse() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/matches/date");
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        ErrorResponseDTO response = handler.handleConstraintViolation(
+                new ConstraintViolationException("error", java.util.Set.of(violation)),
+                request).getBody();
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.status());
+
+        assertEquals("/api/matches/date", response.path());
     }
 }
 

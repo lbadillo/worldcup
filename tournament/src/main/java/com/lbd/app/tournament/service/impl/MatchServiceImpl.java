@@ -1,14 +1,17 @@
 package com.lbd.app.tournament.service.impl;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.lbd.app.tournament.dto.UserBetIDTO;
+import com.lbd.app.tournament.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lbd.app.tournament.dto.MatchDTO;
-import com.lbd.app.tournament.dto.MatchResultDTO;
+import com.lbd.app.tournament.dto.MatchValueDTO;
 import com.lbd.app.tournament.dto.TeamSummaryDTO;
 import com.lbd.app.tournament.exception.ResourceNotFoundException;
 import com.lbd.app.tournament.model.Match;
@@ -26,6 +29,7 @@ public class MatchServiceImpl implements MatchService {
     private final MatchRepository matchRepository;
     private final GroupRepository groupRepository;
     private final StageRepository stageRepository;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,10 +59,28 @@ public class MatchServiceImpl implements MatchService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserBetIDTO> getMatchesByDate(String startDateS,
+                                              String endDateS) {
+        var user = userService.getUserInfo();
+
+        Instant startDate = Instant.parse(startDateS + "T00:00:00Z");
+        Instant endDate = Instant.parse(endDateS + "T23:59:59.999Z");
+
+        return matchRepository.findByDateAndUser(startDate,
+                endDate,
+                user.getId());
+
+
+    }
+
+
     private MatchDTO toMatchDto(Match match) {
-        MatchResultDTO result = match.getResult() == null
-                ? new MatchResultDTO(0, 0)
-                : new MatchResultDTO(match.getResult().getValue1(), match.getResult().getValue2());
+        MatchValueDTO result = match.getResult() == null
+                ? new MatchValueDTO(0, 0)
+                : new MatchValueDTO(match.getResult().getValue1(), match.getResult().getValue2());
+
 
         return new MatchDTO(
                 match.getId(),
@@ -70,6 +92,9 @@ public class MatchServiceImpl implements MatchService {
                 match.getDateMatch(),
                 result
         );
+
     }
+
+
 }
 

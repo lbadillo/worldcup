@@ -2,20 +2,22 @@ package com.lbd.app.tournament.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import com.lbd.app.tournament.dto.UserBetIDTO;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import com.lbd.app.tournament.dto.MatchDTO;
-import com.lbd.app.tournament.dto.MatchResultDTO;
+import com.lbd.app.tournament.dto.MatchValueDTO;
 import com.lbd.app.tournament.dto.TeamSummaryDTO;
 import com.lbd.app.tournament.service.MatchService;
 
@@ -26,6 +28,9 @@ public class MatchesControllerTest {
 
     @Mock
     private MatchService matchService;
+
+    @Mock
+    private UserBetIDTO userBetIDTO;
 
 
     @Test
@@ -57,6 +62,20 @@ public class MatchesControllerTest {
         assertEquals(2L, response.get(0).stageId());
     }
 
+    @Test
+    void shouldReturnMatchesByDate() {
+        String date = "2024-06-15";
+        when(matchService.getMatchesByDate(any(),any())).thenReturn(getMatchesByDate());
+        List<UserBetIDTO> response = matchesController.getMatchesByDate(date);
+        assertEquals(1, response.size());
+    }
+
+
+
+    private List<UserBetIDTO> getMatchesByDate() {
+        return List.of(userBetIDTO);
+    }
+
     private List<MatchDTO> getMatches(Long groupId,
                                       Long stageId) {
         return List.of(new MatchDTO(
@@ -67,7 +86,8 @@ public class MatchesControllerTest {
                 new TeamSummaryDTO(1L, "Brazil", "br.png"),
                 new TeamSummaryDTO(2L, "Argentina", "ar.png"),
                 null,
-                new MatchResultDTO(2, 1)
+                new MatchValueDTO(2, 1)
+
         ));
     }
 }
