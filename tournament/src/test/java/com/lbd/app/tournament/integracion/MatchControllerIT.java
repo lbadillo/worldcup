@@ -1,5 +1,8 @@
 package com.lbd.app.tournament.integracion;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lbd.app.tournament.dto.UserBetDTO;
 import com.lbd.app.tournament.model.Bet;
 import com.lbd.app.tournament.model.Group;
 import com.lbd.app.tournament.model.Match;
@@ -17,13 +20,9 @@ import com.lbd.app.tournament.repository.TeamRepository;
 import com.lbd.app.tournament.repository.UserRepository;
 import com.lbd.app.tournament.repository.UserRoleRepository;
 import com.lbd.app.tournament.util.GeneralConstants;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,11 +32,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +52,8 @@ class MatchControllerIT {
     static final String TEST_EMAIL = "usuario.prueba@example.com";
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @BeforeAll
@@ -71,7 +73,7 @@ class MatchControllerIT {
         stageRepository.deleteAll();
         userRepository.deleteAll();
 
-        Set<Team> teamsSaved = new HashSet<>();
+        Set<Team> teamsSaved = new LinkedHashSet<>();
 
         UserRole role = userRoleRepository.findByName(GeneralConstants.USER_ROLE_NAME)
                 .orElseGet(() -> userRoleRepository.save(
@@ -91,7 +93,7 @@ class MatchControllerIT {
                         .build()
         );
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 4; i++) {
             Team team = Team.builder().name("Team " + i)
                     .flag("flag" + i + ".png")
                     .wins(i)
@@ -111,25 +113,26 @@ class MatchControllerIT {
 
         Stage stageSaved = stageRepository.save(Stage.builder().name("Group Stage").build());
 
+        List<Team> listTeams = new ArrayList<>(teamsSaved);
         Match match1 = matchRepository.save(
                 Match.builder().group(groupSaved)
-                        .team1(teamsSaved.iterator().next())
-                        .team2(teamsSaved.iterator().next())
+                        .team1(listTeams.get(0))
+                        .team2(listTeams.get(1))
                         .stage(stageSaved)
                         .dateMatch(Instant.parse("2026-06-10T15:30:00Z")).build());
 
         Match match2 = matchRepository.save(
                 Match.builder().group(groupSaved)
-                        .team1(teamsSaved.iterator().next())
-                        .team2(teamsSaved.iterator().next())
+                        .team1(listTeams.get(2))
+                        .team2(listTeams.get(3))
                         .stage(stageSaved)
                         .dateMatch(Instant.parse("2026-06-10T15:30:00Z")).build());
 
 
         matchRepository.save(
                 Match.builder().group(groupSaved)
-                        .team1(teamsSaved.iterator().next())
-                        .team2(teamsSaved.iterator().next())
+                        .team1(listTeams.get(1))
+                        .team2(listTeams.get(3))
                         .stage(stageSaved)
                         .dateMatch(Instant.parse("2026-07-10T15:30:00Z")).build());
 
@@ -156,12 +159,24 @@ class MatchControllerIT {
     @Test
     void getMatches_WhenAuthenticated_ShouldReturnUserFromDatabase() throws Exception {
 
-        mockMvc.perform(get("/matches/date/2026-06-10")
+        var res = mockMvc.perform(get("/matches/date/2026-06-10")
 
                         .with(jwt().jwt(jwt -> jwt.claim("email", TEST_EMAIL)))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andReturn();
+        var resBody = res.getResponse().getContentAsString();
+
+        List<UserBetDTO> matches = objectMapper.readValue(
+                resBody,
+                new TypeReference<List<UserBetDTO>>() {
+                }
+        );
+
+        assertEquals(1,
+                matches.stream().filter(match -> match.team1Name().equals(
+                        "Team 0")).count());
+
 
     }
 
