@@ -11,6 +11,7 @@ import com.lbd.app.tournament.model.UserRole;
 import com.lbd.app.tournament.repository.BetRepository;
 import com.lbd.app.tournament.repository.GroupRepository;
 import com.lbd.app.tournament.repository.MatchRepository;
+import com.lbd.app.tournament.repository.ResultRepository;
 import com.lbd.app.tournament.repository.StageRepository;
 import com.lbd.app.tournament.repository.TeamRepository;
 import com.lbd.app.tournament.repository.UserRepository;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,30 +45,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = "app.security.enabled=true")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @ActiveProfiles("integration")
 class MatchControllerIT {
 
-    private final String TEST_EMAIL = "usuario.prueba@example.com";
+    static final String TEST_EMAIL = "usuario.prueba@example.com";
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserRoleRepository userRoleRepository;
-    @Autowired
-    private MatchRepository matchRepository;
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private StageRepository stageRepository;
-    @Autowired
-    private BetRepository betRepository;
 
-    @BeforeEach
-    void setUp() {
+
+    @BeforeAll
+    static void setUp(
+            @Autowired UserRepository userRepository,
+            @Autowired UserRoleRepository userRoleRepository,
+            @Autowired MatchRepository matchRepository,
+            @Autowired TeamRepository teamRepository,
+            @Autowired GroupRepository groupRepository,
+            @Autowired StageRepository stageRepository,
+            @Autowired BetRepository betRepository,
+            @Autowired ResultRepository resultRepository) {
         betRepository.deleteAll();
         matchRepository.deleteAll();
         groupRepository.deleteAll();
@@ -82,7 +79,6 @@ class MatchControllerIT {
                                 .name(GeneralConstants.USER_ROLE_NAME)
                                 .build()
                 ));
-
 
 
         User savedUser = userRepository.save(
@@ -115,32 +111,35 @@ class MatchControllerIT {
 
         Stage stageSaved = stageRepository.save(Stage.builder().name("Group Stage").build());
 
-        Instant tmp = Instant.parse("2026-06-10T15:30:00Z");
-
         Match match1 = matchRepository.save(
                 Match.builder().group(groupSaved)
                         .team1(teamsSaved.iterator().next())
                         .team2(teamsSaved.iterator().next())
                         .stage(stageSaved)
-                        .dateMatch(tmp).build());
+                        .dateMatch(Instant.parse("2026-06-10T15:30:00Z")).build());
 
         Match match2 = matchRepository.save(
                 Match.builder().group(groupSaved)
                         .team1(teamsSaved.iterator().next())
                         .team2(teamsSaved.iterator().next())
                         .stage(stageSaved)
-                        .dateMatch(tmp).build());
-
-        Result result1 =
-                Result.builder().match(match1).value1(2).value2(1).build();
-        Result result2 =
-                Result.builder().match(match2).value1(1).value2(1).build();
+                        .dateMatch(Instant.parse("2026-06-10T15:30:00Z")).build());
 
 
-      //  match1.setResult(result1);
-      //  match2.setResult(result2);
-        matchRepository.save(match2);
-        matchRepository.save(match1);
+        matchRepository.save(
+                Match.builder().group(groupSaved)
+                        .team1(teamsSaved.iterator().next())
+                        .team2(teamsSaved.iterator().next())
+                        .stage(stageSaved)
+                        .dateMatch(Instant.parse("2026-07-10T15:30:00Z")).build());
+
+
+        var m1 = matchRepository.save(match2);
+        var m2 = matchRepository.save(match1);
+
+        resultRepository.save(Result.builder().match(m1).value1(2).value2(1).build());
+        resultRepository.save(Result.builder().match(m2).value1(1).value2(1).build());
+
         betRepository.save(
                 Bet.builder()
                         .match(matchRepository.save(match1))
@@ -154,40 +153,34 @@ class MatchControllerIT {
     }
 
 
-
     @Test
-    void getUser_WhenAuthenticated_ShouldReturnUserFromDatabase() throws Exception {
-        setUp();
+    void getMatches_WhenAuthenticated_ShouldReturnUserFromDatabase() throws Exception {
+
         mockMvc.perform(get("/matches/date/2026-06-10")
 
                         .with(jwt().jwt(jwt -> jwt.claim("email", TEST_EMAIL)))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        /*
-        .andExpect(jsonPath("$.id").value(savedUser.getId()))
-                .andExpect(jsonPath("$.name").value("Carlos Pérez"))
-                .andExpect(jsonPath("$.email").value(TEST_EMAIL))
-                .andExpect(jsonPath("$.providerUserId").value("123456789"))
-                .andExpect(jsonPath("$.roleName").value(GeneralConstants.USER_ROLE_NAME));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
 
-         */
     }
 
-    /*
+
     @Test
-    void getUser_WhenUnauthenticated_ShouldRedirectToOAuth() throws Exception {
-        mockMvc.perform(get("/user")
+    void getMatches_WhenUnauthenticated_ShouldRedirectToOAuth() throws Exception {
+        mockMvc.perform(get("/matches/date/2026-06-10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void getUser_WhenUserNotInDatabase_ShouldReturnNotFound() throws Exception {
-        mockMvc.perform(get("/user")
-                        .with(jwt().jwt(jwt -> jwt.claim("email", "no.existe@example.com")))
+    void getMatches_WhenDateNotInDatabase_ShouldReturnNotFound() throws Exception {
+        mockMvc.perform(get("/matches/date/2026-06-15")
+                        .with(jwt().jwt(jwt -> jwt.claim("email", TEST_EMAIL)))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
-    */
+
 
 }
