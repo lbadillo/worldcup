@@ -131,6 +131,7 @@
 						<exclude>**/config/**</exclude>
 						<exclude>**/repository/**</exclude>
 						<exclude>**/util/*Constants*</exclude>
+						<exclude>**/dto/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
