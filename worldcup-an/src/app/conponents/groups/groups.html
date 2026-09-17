@@ -1,0 +1,52 @@
+<div class="groups-container">
+  <h1>Grupos del Torneo</h1>
+
+  @if (groupsResource.isLoading()) {
+    <p>Cargando grupos...</p>
+  } @else if (isUnauthorized()) {
+    <button (click)="redirectToLogin()">Iniciar sesión con Google</button>
+  } @else if (groupsResource.error()) {
+    <p>Error al cargar la información.</p>
+  } @else if (groupsResource.value(); as groups) {
+    <div class="groups-grid">
+      @for (group of groups; track group.id) {
+        <div class="group-card">
+          <h2>{{ group.name }}</h2>
+
+          <table class="teams-table">
+            <thead>
+              <tr>
+                <th>Equipo</th>
+                <th>Bandera</th>
+                <th>PG</th>
+                <th>PE</th>
+                <th>PP</th>
+                <th>PTS</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (team of group.teams; track team.id) {
+                <tr>
+                  <td>{{ team.name }}</td>
+                  <td>{{ team.flag }}</td>
+                  <td>{{ team.wins }}</td>
+                  <td>{{ team.draws }}</td>
+                  <td>{{ team.losses }}</td>
+                  <td>
+                    <strong>{{ team.points }}</strong>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6">No hay equipos en este grupo.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @empty {
+        <p>No hay grupos disponibles.</p>
+      }
+    </div>
+  }
+</div>
